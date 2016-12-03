@@ -1,0 +1,1087 @@
+#include <iostream>
+#include <conio.h>
+#include <stdio.h>
+#include <string>
+
+using namespace std;
+
+
+struct cliente
+{
+int id;
+string Nombre;
+int Carnet_Identidad;
+string Direccion;
+int Telefono_Celular;
+float Credito;
+char estado;
+};
+
+struct vendedor
+{
+int id;
+string Nombre;
+string Direccion;
+int Carnet_Identidad;
+int Telefono_Celular;
+char estado;
+};
+
+struct vehiculo
+{
+	int id;
+	string marca;
+	string modelo;
+	float precio;
+	char estado;
+};
+
+struct venta
+{
+	int id;
+	int id_vendedor;
+	int id_cliente;
+	int id_vehiculo;
+	float Cuota_Inicial;
+	float cuota_mensual;
+	string fecha_venta;
+	char estado;
+};
+
+void Crear_Archivo_Cliente()
+{
+	FILE *ptr;
+	ptr = fopen("cliente.dat","wb");
+	fclose(ptr);
+}
+cliente Get_Informacion_Cliente()
+{
+	cliente reg;
+
+		fflush(stdin);
+		cin.clear();
+
+		cout<<endl<<"Ingrese el id del cliente: ";
+		cin>>reg.id;
+		
+		reg.Nombre="";
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el nombre del cliente: ";
+		getline(cin,reg.Nombre);
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese numero de carnet: ";
+		cin>>reg.Carnet_Identidad;
+
+		fflush(stdin);
+		cin.clear();
+
+		cout<<endl<<"Ingrese numero celular: ";
+		cin>>reg.Telefono_Celular;
+
+		
+		reg.Direccion="";
+		fflush(stdin);
+		cin.clear();
+
+		cout<<endl<<"Ingrese la Direccion: ";
+		getline(cin,reg.Direccion);
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el credito: ";
+		cin>>reg.Credito;
+
+		reg.estado='N';
+
+		return reg;
+
+}
+void Agregar_Cliente()
+{
+	FILE *ptr;
+	cliente reg;
+	ptr = fopen("cliente.dat","ab");
+	reg = Get_Informacion_Cliente();
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+void Mostrar_Cliente()
+{
+	FILE *ptr;
+	cliente reg;
+	ptr = fopen("cliente.dat","rb");
+	if(ptr != NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+		cout<<"******************************************Clientes******************************************"<<endl;
+		cout<<" id | nombre          | direccion           | carnet      | movil     | credito "<<endl;
+		cout<<"********************************************************************************************"<<endl;
+		while(!feof(ptr))
+		{
+				
+			if(reg.estado == 'N')
+			{
+				cout<<reg.id<<"|";
+				cout<<reg.Nombre<<"|";
+				cout<<reg.Direccion<<"|";
+				cout<<reg.Carnet_Identidad<<"|";
+				cout<<reg.Telefono_Celular<<"|";
+				cout<<reg.Credito<<endl;
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);		
+	}
+	
+	else
+	{
+		cout<<"el archivo no existe!!"<<endl;
+	}
+}
+void Modificar_Cliente()
+{
+	FILE*ptr;
+	cliente reg;
+	ptr = fopen("cliente.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			cout<<"ingrese el id del cliente a modificar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			
+			fread(&reg, sizeof(reg),1,ptr);	
+			
+			if(feof(ptr))
+			{
+					cout<<"el registro no existe..."<<endl;
+			}
+			else
+			{
+				if(reg.estado == 'N')
+				{
+								reg.Nombre[0]='\0';
+								fflush(stdin);
+								cin.clear();
+								cout<<endl<<"Ingrese el nombre del cliente: ";
+								getline(cin,reg.Nombre);
+
+								fflush(stdin);
+								cin.clear();
+								cout<<endl<<"Ingrese numero de carnet: ";
+								cin>>reg.Carnet_Identidad;
+
+								fflush(stdin);
+								cin.clear();
+								cout<<endl<<"Ingrese numero celular: ";
+								cin>>reg.Telefono_Celular;
+
+								reg.Direccion[0]='\0';
+								fflush(stdin);
+								cin.clear();
+								cout<<endl<<"Ingrese la Direccion: ";
+								getline(cin,reg.Direccion);
+
+								fflush(stdin);
+								cin.clear();
+								cout<<endl<<"Ingrese el credito: ";
+								cin>>reg.Credito;
+
+								reg.estado='N';
+
+								fseek(ptr, sizeof(reg)* (reg.id - 1), SEEK_SET);
+								//modifica el registro con toda la informacion cargada.
+								fwrite(&reg, sizeof(reg), 1, ptr);
+								fclose(ptr);
+				}
+				else
+				{
+				system("cls");
+				cout << endl << "El registro no existe...!!!";
+				getch();
+				}
+			}
+		fclose(ptr);
+	}
+}
+void Eliminar_Cliente()
+{
+	FILE*ptr;
+	cliente reg;
+	ptr = fopen("cliente.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id del cliente a eliminar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			reg.estado = 'S';
+			fwrite(&reg, sizeof(reg), 1, ptr);
+			fclose(ptr);
+	}
+}
+
+void Menu_Principal(){
+	cout << endl << "    ====================================================================";
+	cout << endl << "=============================== Menu Principal ===============================";
+	cout << endl << "1.- Cliente";
+	cout << endl << "2.- Vendedor ";
+	cout << endl << "3.- Vehiculos ";
+	cout << endl << "4.- Ventas ";
+	cout << endl << "0.- Salir ";
+	cout << endl << "Opcion: ";
+}
+void Menu_Cliente(){
+	cout << endl << "   ====================================================================";
+	cout << endl << "=============================== Cliente =================================";
+	cout << endl << "1.- Crear archivo ";
+	cout << endl << "2.- Agregar CLiente";
+	cout << endl << "3.- Mostrar Clientes";
+	cout << endl << "4.- Modificar Clientes";
+	cout << endl << "5.- Eliminar Clientes";
+	cout << endl << "0.- Salir ";
+	cout << endl << "Opcion: ";
+}
+void Menu_Vendedor(){
+	cout << endl << "    ==============================================================   ";
+	cout << endl << "=============================== Vendedor =============================";
+	cout << endl << "1.- Crear archivo ";
+	cout << endl << "2.- Agregar Vendedor";
+	cout << endl << "3.- Mostrar Vendedor ";
+	cout << endl << "4.- Modificar Vendedor ";
+	cout << endl << "5.- Eliminar Vendedor ";
+	cout << endl << "0.- Salir ";
+	cout << endl << "Opcion: ";
+}
+void Menu_Vehiculo(){
+	cout << endl << "    ==============================================================   ";
+	cout << endl << "=============================== Vehiculo =============================";
+	cout << endl << "1.- Crear archivo ";
+	cout << endl << "2.- Agregar Vehiculo";
+	cout << endl << "3.- Mostrar Vehiculo ";
+	cout << endl << "4.- Modificar Vehiculo ";
+	cout << endl << "5.- Eliminar Vehiculo ";
+	cout << endl << "0.- Salir ";
+	cout << endl << "Opcion: ";
+}
+void Menu_Venta(){
+	cout << endl << "    ==============================================================   ";
+	cout << endl << "  =============================== venta =============================";
+	cout << endl << "1.- Crear archivo ";
+	cout << endl << "2.- Agregar Venta";
+	cout << endl << "3.- Mostrar Ventas ";
+	cout << endl << "4.- Modificar Venta ";
+	cout << endl << "5.- Eliminar Venta ";
+	cout << endl << "0.- Salir ";
+	cout << endl << "Opcion: ";
+}
+
+void Crear_Archivo_Vehiculo()
+{
+	FILE *ptr;
+	ptr = fopen("vehiculo.dat","wb");
+	fclose(ptr);
+}
+vehiculo Get_Informacion_Vehiculo()
+{
+	vehiculo reg;
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el id del vehiculo: ";
+		cin>>reg.id;
+
+		reg.marca="";
+		fflush(stdin);
+		cin.clear();
+	
+		cout<<endl<<"Ingrese la marca: ";
+		getline(cin,reg.marca);
+		fflush(stdin);
+		cin.clear();
+	
+		reg.modelo="";
+		cout<<endl<<"Ingrese el modelo: ";
+		getline(cin,reg.modelo);
+	
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el precio: ";
+		cin>>reg.precio;
+
+		
+		reg.estado='N';
+
+		return reg;
+
+}
+void Agregar_Vehiculo()
+{
+	FILE *ptr;
+	vehiculo reg;
+	ptr = fopen("vehiculo.dat","ab");
+	reg = Get_Informacion_Vehiculo();
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+void Mostrar_Vehiculo()
+{
+	FILE *ptr;
+	vehiculo reg;
+	ptr = fopen("vehiculo.dat","rb");
+	if(ptr != NULL)
+	{
+
+		fread(&reg,sizeof(reg),1,ptr);
+		cout<<"***************************Vehiculos***************************"<<endl;
+		cout<<" id | marca | modelo | precio | "<<endl;
+		cout<<"***************************************************************"<<endl;
+		while(!feof(ptr))
+		{
+				
+			if(reg.estado == 'N')
+			{
+				cout<<reg.id<<"|";
+				cout<<reg.marca<<"|";
+				cout<<reg.modelo<<"|";
+				cout<<reg.precio<<endl;;
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+			
+	}
+	else
+	{
+		cout<<"el archivo no existe!!"<<endl;
+	}
+}
+void Modificar_Vehiculo()
+{
+	FILE*ptr;
+	vehiculo reg;
+	ptr = fopen("vehiculo.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id del vehiculo a modificar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			
+			fread(&reg, sizeof(reg),1,ptr);	
+			
+			if(feof(ptr))
+			{
+					cout<<"el registro no existe..."<<endl;
+			}
+			else
+			{
+				if(reg.estado == 'N')
+				{
+						
+						reg.marca="";
+						cout<<endl<<"Ingrese la marca: ";
+						getline(cin,reg.marca);
+
+						reg.modelo="";
+						cout<<endl<<"Ingrese el modelo: ";
+						getline(cin,reg.modelo);
+	
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el precio: ";
+						cin>>reg.precio;
+
+		
+						reg.estado='N';
+
+						fseek(ptr, sizeof(reg)* (reg.id - 1), SEEK_SET);
+						//modifica el registro con toda la informacion cargada.
+						fwrite(&reg, sizeof(reg), 1, ptr);
+				}
+				else
+				{
+				system("cls");
+				cout << endl << "El registro no existe...!!!";
+				getch();
+				}
+			}
+		fclose(ptr);
+	}
+}
+void Eliminar_Vehiculo()
+{
+	FILE*ptr;
+	vehiculo reg;
+	ptr = fopen("vehiculo.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id del vehiculo a eliminar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			reg.estado = 'S';
+			fwrite(&reg, sizeof(reg), 1, ptr);
+			fclose(ptr);
+	}
+}
+
+void Crear_Archivo_Vendedor()
+{
+	FILE *ptr;
+	ptr = fopen("vendedor.dat","wb");
+	fclose(ptr);
+}
+vendedor Get_Informacion_Vendedor()
+{
+		vendedor reg;
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el id del vendedor: ";
+		cin>>reg.id;
+
+		reg.Nombre="";
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el nombre del vendedor: ";
+		getline(cin,reg.Nombre);
+
+		reg.Direccion="";
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese la direccion del vendedor: ";
+		cin>>reg.Direccion;
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el carnet del vendedor: ";
+		cin>>reg.Carnet_Identidad;
+
+		fflush(stdin);
+		cin.clear();
+		cout<<endl<<"Ingrese el telefono celular del vendedor: ";
+		cin>>reg.Telefono_Celular;
+		
+		fflush(stdin);
+		cin.clear();
+		reg.estado='N';
+
+		return reg;
+
+}
+void Agregar_Vendedor()
+{
+	FILE *ptr;
+	vendedor reg;
+	ptr = fopen("vendedor.dat","ab");
+	reg = Get_Informacion_Vendedor();
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+void Mostrar_Vendedor()
+{
+	FILE *ptr;
+	vendedor reg;
+	ptr = fopen("vendedor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+		cout<<"***************************Vendedores*************************"<<endl;
+		cout<<" id | Nombre | Direccion | Carnet | telefono celular"<<endl;
+		cout<<"***************************************************************"<<endl;
+		
+		while(!feof(ptr))
+		{
+			if(reg.estado == 'N')
+			{
+				cout<<reg.id<<"|";
+				cout<<reg.Nombre<<"|";
+				cout<<reg.Direccion<<"|";
+				cout<<reg.Carnet_Identidad<<"|";
+				cout<<reg.Telefono_Celular<<endl;
+				
+			}
+				
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+	
+	}
+	
+}
+void Modificar_Vendedor()
+{
+	FILE*ptr;
+	vendedor reg;
+	ptr = fopen("vendedor.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id del vendedor a modificar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			
+			fread(&reg, sizeof(reg),1,ptr);	
+			
+			if(feof(ptr))
+			{
+					cout<<"el registro no existe..."<<endl;
+			}
+
+			else
+			{
+				if(reg.estado == 'N')
+				{
+						
+						reg.Nombre="";
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el nombre del vendedor: ";
+						getline(cin,reg.Nombre);
+				
+						reg.Direccion="";
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese la direccion del vendedor: ";
+						getline(cin,reg.Direccion);
+
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el carnet del vendedor: ";
+						cin>>reg.Carnet_Identidad;
+
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el telefono celular del vendedor: ";
+						cin>>reg.Telefono_Celular;
+
+						reg.estado='N';
+
+						fseek(ptr, sizeof(reg)* (reg.id - 1), SEEK_SET);
+						//modifica el registro con toda la informacion cargada.
+						fwrite(&reg, sizeof(reg), 1, ptr);
+				}
+				else
+				{
+				system("cls");
+				cout << endl << "El registro no existe...!!!";
+				getch();
+				}
+			}
+		fclose(ptr);
+	}
+}
+void Eliminar_Vendedor()
+{
+	FILE*ptr;
+	vendedor reg;
+	ptr = fopen("vendedor.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id del vendedor a eliminar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			reg.estado = 'S';
+			fwrite(&reg, sizeof(reg), 1, ptr);
+			fclose(ptr);
+	}
+}
+
+void Crear_Archivo_Venta()
+{
+	FILE * ptr;
+	ptr = fopen("venta.dat","wb");
+	fclose(ptr);
+}
+vehiculo Get_Datos_Vehiculo(int id)
+{
+	FILE *ptr;
+	vehiculo reg,aux;
+	ptr = fopen("vehiculo.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+
+		while(!feof(ptr))
+		{
+			if( (reg.id == id) && (reg.estado == 'N'))
+			{
+				aux = reg;
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+	
+	}
+	fclose(ptr);
+	return aux;
+}
+cliente Get_Datos_Cliente(int id)
+{
+	FILE *ptr;
+	cliente reg;
+	cliente aux;
+	ptr = fopen("cliente.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+
+		while(!feof(ptr))
+		{
+			if( (reg.id == id) && (reg.estado == 'N'))
+			{
+				aux = reg;
+
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+	
+	}
+	fclose(ptr);
+	return aux;
+}
+vendedor Get_Datos_Vendedor(int id)
+{
+	FILE *ptr;
+	vendedor reg;
+	vendedor aux;
+	ptr = fopen("vendedor.dat","rb");
+	if(ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+
+		while(!feof(ptr))
+		{
+			if( (reg.id == id) && (reg.estado == 'N'))
+			{
+				aux = reg;
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+	
+	}
+	fclose(ptr);
+	return aux;
+}
+venta Get_Informacion_Venta()
+{
+	venta reg;
+	
+	fflush(stdin);
+	cin.clear();
+	cout<<endl<<"Ingrese el id de la venta:";
+	cin>>reg.id;
+
+	fflush(stdin);
+	cin.clear();
+	cout<<endl<<"Ingrese el id del vendedor";
+	cin>>reg.id_vendedor;
+
+	fflush(stdin);
+	cin.clear();
+	cout<<endl<<"Ingrese el id del cliente ";
+	cin>>reg.id_cliente;
+
+	
+	
+	fflush(stdin);
+	cin.clear();
+	cout<<endl<<"Ingrese el id del vehiculo ";
+	cin>>reg.id_vehiculo;
+	
+	
+	
+	fflush(stdin);
+	cin.clear();
+	cout<<"Ingrese la cuota inicial: ";
+	cin>>reg.Cuota_Inicial;
+
+
+	cliente regcliente = Get_Datos_Cliente(reg.id_cliente);
+	vehiculo regvehiculo = Get_Datos_Vehiculo(reg.id_vehiculo);
+
+
+
+	reg.cuota_mensual = ((regvehiculo.precio - reg.Cuota_Inicial) / 5 );
+
+	fflush(stdin);
+	cin.clear();
+	cout<<endl<<"Ingrese la fecha de venta DD/MM/AAAA: ";
+	do{
+	getline(cin,reg.fecha_venta);
+	}while(reg.fecha_venta.length() == 0);
+	reg.estado = 'N';
+
+
+	return reg;
+}
+void Agregar_Venta()
+{
+
+	FILE *ptr;
+	venta reg;
+	ptr = fopen("venta.dat","ab");
+	reg = Get_Informacion_Venta();
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+
+}
+void Mostrar_Ventas()
+{
+
+	FILE *ptr;
+	venta reg;
+	cliente regcliente;
+	vehiculo regvehiculo;
+	vendedor regvendedor;
+	ptr = fopen("venta.dat","rb");
+	if(ptr!=NULL)
+	{
+		cout<<"*****************************Ventas*****************************"<<endl;
+		cout<<" ID | Vendedor | Cliente | Vehiculo | Cuota Mensual | Fecha Venta |"<<endl;
+		cout<<"****************************************************************"<<endl;
+
+		fread(&reg,sizeof(reg),1,ptr);
+		while(!feof(ptr))
+		{
+			if(reg.estado =='N')
+			{
+
+				regcliente = Get_Datos_Cliente(reg.id_cliente);
+				regvehiculo = Get_Datos_Vehiculo(reg.id_vehiculo);
+				regvendedor = Get_Datos_Vendedor(reg.id_vendedor);
+				
+				cout<<reg.id<<"|";
+				cout<<regvendedor.Nombre<<"|";
+				cout<<regcliente.Nombre<<"|";
+				cout<<regvehiculo.id<<"|";
+				cout<<reg.cuota_mensual<<"|";
+				cout<<reg.fecha_venta<<endl;
+			
+			
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+	
+	
+	
+	
+	}
+
+
+
+
+}
+void Modificar_Venta()
+{
+	FILE*ptr;
+	venta reg;
+	ptr = fopen("venta.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id de la venta a modificar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			
+			fread(&reg, sizeof(reg),1,ptr);	
+			
+			if(feof(ptr))
+			{
+					cout<<"el registro no existe..."<<endl;
+			}
+			else
+			{
+				if(reg.estado == 'N')
+				{
+						
+					fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el id del vendedor";
+						cin>>reg.id_vendedor;
+
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el id del cliente ";
+						cin>>reg.id_cliente;
+
+						cliente regcliente = Get_Datos_Cliente(reg.id_cliente);
+	
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese el id del vehiculo ";
+						cin>>reg.id_vehiculo;
+	
+						vehiculo regvehiculo = Get_Datos_Vehiculo(reg.id_vehiculo);
+
+	
+						fflush(stdin);
+						cin.clear();
+						cout<<"Ingrese la cuota inicial: ";
+						cin>>reg.Cuota_Inicial;
+
+						reg.cuota_mensual = ((regvehiculo.precio - reg.Cuota_Inicial) / 5 );
+
+						fflush(stdin);
+						cin.clear();
+						cout<<endl<<"Ingrese la fecha de venta DD/MM/AAAA: ";
+						getline(cin,reg.fecha_venta);
+
+	
+						reg.estado = 'N';
+						fseek(ptr, sizeof(reg)* (reg.id - 1), SEEK_SET);
+						//modifica el registro con toda la informacion cargada.
+						fwrite(&reg, sizeof(reg), 1, ptr);
+				}
+				else
+				{
+				system("cls");
+				cout << endl << "El registro no existe...!!!";
+				getch();
+				}
+			}
+		fclose(ptr);
+	}
+}
+void Eliminar_Venta()
+{
+	FILE*ptr;
+	venta reg;
+	ptr = fopen("venta.dat", "r+b");
+	if (ptr == NULL)
+	{
+		cout << "El archivo no existe...";
+	}
+	else
+	{
+			
+			cout<<"ingrese el id de la venta a eliminar:";
+			cin>>reg.id;
+			fseek(ptr,sizeof(reg)* (reg.id - 1),SEEK_SET);
+			reg.estado = 'S';
+			fwrite(&reg, sizeof(reg), 1, ptr);
+			fclose(ptr);
+	}
+}
+int main(){
+	char opcion, opcion1, opcion2, opcion3, opcion4;
+	char aux[20];
+	aux[0]='\0';
+	system("cls");
+	do{
+
+		Menu_Principal();
+		cin >> opcion;
+		switch (opcion)
+		{
+		case '1':
+		{
+					system("cls");
+					do{
+						Menu_Cliente();
+						cin >> opcion1;
+
+						if (opcion1 == '1')
+						{
+							Crear_Archivo_Cliente();
+							cout << "El archivo fue creado exitosamente!" << endl;
+							_getch();
+						}
+						else if (opcion1 == '2')
+						{
+							system("cls");
+							Agregar_Cliente();
+							_getch();
+						}
+						else if (opcion1 == '3')
+						{
+							system("cls");
+							Mostrar_Cliente();
+							_getch();
+						}
+						else if (opcion1 == '4')
+						{
+							Modificar_Cliente();
+							_getch();
+						}
+						else if (opcion1 == '5')
+						{
+							Eliminar_Cliente();
+							_getch();
+						}
+					
+						fflush(stdin);
+						cin.clear();
+						system("cls");
+					} while (opcion1 != '0');
+					break;
+		}
+		case '2':
+		{
+					system("cls");
+					do{
+						Menu_Vendedor();
+						cin >> opcion2;
+						if (opcion2 == '1')
+						{
+							Crear_Archivo_Vendedor();
+							cout << "El archivo fue creado exitosamente!" << endl;
+							_getch();
+						}
+						else if (opcion2 == '2')
+						{
+							system("cls");
+							Agregar_Vendedor();
+							_getch();
+						}
+						else if (opcion2 == '3')
+						{
+							system("cls");
+							Mostrar_Vendedor();
+							_getch();
+						}
+						else if (opcion2 == '4')
+						{
+							Modificar_Vendedor();
+							_getch();
+						}
+						else if (opcion2 == '5')
+						{
+							Eliminar_Vendedor();
+							_getch();
+
+						}
+						fflush(stdin);
+						cin.clear();
+						system("cls");
+					} while (opcion2 != '0');
+					break;
+		}
+		case '3':
+		{
+					system("cls");
+					do{
+						Menu_Vehiculo();
+						cin >> opcion3;
+
+						if (opcion3 == '1')
+						{
+							Crear_Archivo_Vehiculo();
+							cout << "El archivo fue creado exitosamente!" << endl;
+							_getch();
+						}
+						else if (opcion3 == '2')
+						{
+							system("cls");
+							Agregar_Vehiculo();
+							_getch();
+						}
+						else if (opcion3 == '3')
+						{
+							system("cls");
+							Mostrar_Vehiculo();
+							_getch();
+						}
+						else if (opcion3 == '4')
+						{
+							Modificar_Vehiculo();
+							_getch();
+						}
+						else if (opcion3 == '5')
+						{
+							Eliminar_Vehiculo();
+							_getch();
+						}
+						
+						fflush(stdin);
+						cin.clear();
+
+						system("cls");
+					} while (opcion3 != '0');
+					break;
+		}
+		case '4':
+		{
+					system("cls");
+					do{
+						Menu_Venta();
+						cin >> opcion3;
+
+						if (opcion3 == '1')
+						{
+							Crear_Archivo_Venta();
+							cout << "El archivo fue creado exitosamente!" << endl;
+							_getch();
+						}
+						else if (opcion3 == '2')
+						{
+							system("cls");
+							Agregar_Venta();
+							_getch();
+						}
+						else if (opcion3 == '3')
+						{
+							system("cls");
+							Mostrar_Ventas();
+							_getch();
+						}
+						else if (opcion3 == '4')
+						{
+							Modificar_Venta();
+							_getch();
+						}
+						else if (opcion3 == '5')
+						{
+							Eliminar_Venta();
+							_getch();
+						}
+						
+						fflush(stdin);
+						cin.clear();
+
+						system("cls");
+					} while (opcion3 != '0');
+					break;
+		}
+		
+		
+		}
+
+		system("cls");
+	} while (opcion != '0');
+
+	return(0);
+
+}
+
